@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from lmspace.vscode.provision import unlock_subagents, DEFAULT_LOCK_NAME
+from subagent.vscode.provision import unlock_subagents, DEFAULT_LOCK_NAME
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def test_unlock_specific_subagent(target_root_with_locks: Path) -> None:
     unlocked = unlock_subagents(
         target_root=target_root_with_locks,
         lock_name=DEFAULT_LOCK_NAME,
-        subagent_number=1,
+        subagent_name="subagent-1",
         unlock_all=False,
         dry_run=False,
     )
@@ -54,7 +54,7 @@ def test_unlock_specific_subagent_not_locked(target_root_with_locks: Path) -> No
     unlocked = unlock_subagents(
         target_root=target_root_with_locks,
         lock_name=DEFAULT_LOCK_NAME,
-        subagent_number=2,
+        subagent_name="subagent-2",
         unlock_all=False,
         dry_run=False,
     )
@@ -67,7 +67,7 @@ def test_unlock_all_subagents(target_root_with_locks: Path) -> None:
     unlocked = unlock_subagents(
         target_root=target_root_with_locks,
         lock_name=DEFAULT_LOCK_NAME,
-        subagent_number=None,
+        subagent_name=None,
         unlock_all=True,
         dry_run=False,
     )
@@ -87,7 +87,7 @@ def test_unlock_dry_run_specific(target_root_with_locks: Path) -> None:
     unlocked = unlock_subagents(
         target_root=target_root_with_locks,
         lock_name=DEFAULT_LOCK_NAME,
-        subagent_number=1,
+        subagent_name="subagent-1",
         unlock_all=False,
         dry_run=True,
     )
@@ -105,7 +105,7 @@ def test_unlock_dry_run_all(target_root_with_locks: Path) -> None:
     unlocked = unlock_subagents(
         target_root=target_root_with_locks,
         lock_name=DEFAULT_LOCK_NAME,
-        subagent_number=None,
+        subagent_name=None,
         unlock_all=True,
         dry_run=True,
     )
@@ -127,7 +127,7 @@ def test_unlock_nonexistent_subagent(tmp_path: Path) -> None:
         unlock_subagents(
             target_root=root,
             lock_name=DEFAULT_LOCK_NAME,
-            subagent_number=99,
+            subagent_name="subagent-99",
             unlock_all=False,
             dry_run=False,
         )
@@ -141,7 +141,7 @@ def test_unlock_nonexistent_root(tmp_path: Path) -> None:
         unlock_subagents(
             target_root=root,
             lock_name=DEFAULT_LOCK_NAME,
-            subagent_number=1,
+            subagent_name="subagent-1",
             unlock_all=False,
             dry_run=False,
         )
@@ -153,7 +153,7 @@ def test_unlock_missing_both_flags(target_root_with_locks: Path) -> None:
         unlock_subagents(
             target_root=target_root_with_locks,
             lock_name=DEFAULT_LOCK_NAME,
-            subagent_number=None,
+            subagent_name=None,
             unlock_all=False,
             dry_run=False,
         )
@@ -165,7 +165,7 @@ def test_unlock_both_flags_specified(target_root_with_locks: Path) -> None:
         unlock_subagents(
             target_root=target_root_with_locks,
             lock_name=DEFAULT_LOCK_NAME,
-            subagent_number=1,
+            subagent_name="subagent-1",
             unlock_all=True,
             dry_run=False,
         )
@@ -184,7 +184,7 @@ def test_unlock_all_when_none_locked(tmp_path: Path) -> None:
     unlocked = unlock_subagents(
         target_root=root,
         lock_name=DEFAULT_LOCK_NAME,
-        subagent_number=None,
+        subagent_name=None,
         unlock_all=True,
         dry_run=False,
     )

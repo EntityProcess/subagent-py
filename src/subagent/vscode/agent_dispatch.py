@@ -19,7 +19,7 @@ DEFAULT_LOCK_NAME = "subagent.lock"
 
 def get_subagent_root() -> Path:
     """Get the root directory for subagents."""
-    return Path.home() / ".lmspace" / "vscode-agents"
+    return Path.home() / ".subagent" / "vscode-agents"
 
 
 def get_all_subagent_workspaces(subagent_root: Path) -> list[Path]:
@@ -317,7 +317,7 @@ def _create_request_prompt(
 2. When completely finished, run these PowerShell commands to signal completion:
 ```
 Move-Item -LiteralPath '{response_file_tmp}' -Destination '{response_file_final}'
-lmspace code unlock --subagent {subagent_name}
+subagent code unlock --subagent {subagent_name}
 ```
 
 Do not proceed to step 2 until your response is completely written to the temporary file.
@@ -406,7 +406,7 @@ def dispatch_agent(
         if subagent_dir is None:
             print(
                 "error: No unlocked subagents available. Provision additional subagents with:\n"
-                "  lmspace code provision --subagents <desired_total>",
+                "  subagent code provision --subagents <desired_total>",
                 file=sys.stderr,
             )
             return 1
@@ -522,7 +522,7 @@ def list_subagents(
             print(f"No subagents found in {subagent_root}", file=sys.stderr)
             print(
                 "hint: Provision subagents first with:\n"
-                "  lmspace code provision --subagents <count>",
+                "  subagent code provision --subagents <count>",
                 file=sys.stderr,
             )
         return 1
@@ -539,7 +539,7 @@ def list_subagents(
             print(f"No subagents found in {subagent_root}", file=sys.stderr)
             print(
                 "hint: Provision subagents first with:\n"
-                "  lmspace code provision --subagents <count>",
+                "  subagent code provision --subagents <count>",
                 file=sys.stderr,
             )
         return 1
@@ -606,7 +606,7 @@ def warmup_subagents(
         )
         print(
             "hint: Provision subagents first with:\n"
-            "  lmspace code provision --subagents <count>",
+            "  subagent code provision --subagents <count>",
             file=sys.stderr,
         )
         return 1

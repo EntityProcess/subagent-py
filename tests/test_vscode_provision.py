@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from lmspace.vscode.provision import provision_subagents, DEFAULT_LOCK_NAME
-from lmspace.vscode.cli import handle_provision
+from subagent.vscode.provision import provision_subagents, DEFAULT_LOCK_NAME
+from subagent.vscode.cli import handle_provision
 
 
 @pytest.fixture
@@ -359,7 +359,7 @@ def test_handle_provision_runs_warmup(
         warmup_calls["dry_run"] = dry_run
         return 0
 
-    monkeypatch.setattr("lmspace.vscode.cli.warmup_subagents", fake_warmup)
+    monkeypatch.setattr("subagent.vscode.cli.warmup_subagents", fake_warmup)
 
     result = handle_provision(args)
 
@@ -392,7 +392,7 @@ def test_handle_provision_skips_warmup_during_dry_run(
     def fake_warmup(*args: object, **kwargs: object) -> int:  # pragma: no cover
         raise AssertionError("warmup should not be called during dry run")
 
-    monkeypatch.setattr("lmspace.vscode.cli.warmup_subagents", fake_warmup)
+    monkeypatch.setattr("subagent.vscode.cli.warmup_subagents", fake_warmup)
 
     result = handle_provision(args)
 

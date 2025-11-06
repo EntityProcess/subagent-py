@@ -11,7 +11,7 @@ from typing import List, Tuple
 try:
     from .agent_dispatch import warmup_subagents  # type: ignore
 except ImportError:  # pragma: no cover - fallback when executed as a script
-    from lmspace.vscode.agent_dispatch import warmup_subagents
+    from subagent.vscode.agent_dispatch import warmup_subagents
 
 DEFAULT_LOCK_NAME = "subagent.lock"
 DEFAULT_TEMPLATE_DIR = (
@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     """Parse CLI arguments for provisioning subagent subagents."""
     parser = argparse.ArgumentParser(
         description=(
-            "Copy the subagent template into %USERPROFILE%/.lmspace/vscode-agents "
+            "Copy the subagent template into %USERPROFILE%/.subagent/vscode-agents "
             "so multiple VS Code instances can run isolated subagents."
         )
     )
@@ -45,10 +45,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--target-root",
         type=Path,
-        default=Path.home() / ".lmspace" / "vscode-agents",
+        default=Path.home() / ".subagent" / "vscode-agents",
         help=(
             "Destination root for subagent directories. Defaults to "
-            "%USERPROFILE%/.lmspace/vscode-agents."
+            "%USERPROFILE%/.subagent/vscode-agents."
         ),
     )
     parser.add_argument(

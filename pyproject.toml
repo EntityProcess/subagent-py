@@ -1,5 +1,5 @@
 [project]
-name = "lmspace"
+name = "subagent"
 version = "0.2.0"
 description = "Runner that provisions subagents from configs"
 readme = "README.md"
@@ -19,7 +19,7 @@ dev = [
 ]
 
 [project.scripts]
-lmspace = "lmspace:main"
+subagent = "subagent:main"
 
 [build-system]
 requires = ["uv_build>=0.9.3,<0.10.0"]
@@ -29,7 +29,7 @@ build-backend = "uv_build"
 include-package-data = true
 
 [tool.setuptools.package-data]
-lmspace = ["vscode/subagent_template/**/*"]
+subagent = ["vscode/subagent_template/**/*"]
 
 [tool.pytest.ini_options]
 addopts = "-q"
