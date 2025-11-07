@@ -353,10 +353,11 @@ def test_handle_provision_runs_warmup(
 
     warmup_calls: dict[str, object] = {}
 
-    def fake_warmup(*, subagent_root: Path, subagents: int, dry_run: bool) -> int:
+    def fake_warmup(*, subagent_root: Path, subagents: int, dry_run: bool, vscode_cmd: str = "code") -> int:
         warmup_calls["root"] = subagent_root
         warmup_calls["count"] = subagents
         warmup_calls["dry_run"] = dry_run
+        warmup_calls["vscode_cmd"] = vscode_cmd
         return 0
 
     monkeypatch.setattr("subagent.vscode.cli.warmup_subagents", fake_warmup)
@@ -368,6 +369,7 @@ def test_handle_provision_runs_warmup(
         "root": target_root,
         "count": 1,
         "dry_run": False,
+        "vscode_cmd": "code",
     }
 
 
