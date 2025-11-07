@@ -167,9 +167,7 @@ def provision_subagents(
                     workspace_src = template_path / "subagent.code-workspace"
                     workspace_dst = subagent_dir / f"{subagent_dir.name}.code-workspace"
                     shutil.copy2(workspace_src, workspace_dst)
-                    created.append(subagent_dir)
-                else:
-                    created.append(subagent_dir)
+                created.append(subagent_dir)
                 # Remove from locked list since we're processing it
                 if subagent_dir in locked_subagents:
                     locked_subagents.remove(subagent_dir)

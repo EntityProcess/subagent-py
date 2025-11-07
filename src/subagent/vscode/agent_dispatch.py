@@ -382,6 +382,7 @@ def dispatch_agent(
     dry_run: bool = False,
     wait: bool = False,
     vscode_cmd: str = "code",
+    subagent_root: Optional[Path] = None,
 ) -> int:
     """Dispatch an agent to an isolated subagent.
     
@@ -394,6 +395,8 @@ def dispatch_agent(
         wait: When True, wait for response and print to stdout (sync mode).
               When False (default), return immediately after dispatch (async mode).
         vscode_cmd: VS Code executable command (default: "code", could be "code-insiders")
+        subagent_root: Root directory containing subagents. Defaults to standard location.
+                      Mainly used for testing with isolated directories.
     
     Returns:
         Exit code (0 for success, non-zero for failure)
@@ -407,8 +410,8 @@ def dispatch_agent(
             raise ValueError(f"Prompt file must be a file, not a directory: {prompt_file}")
 
         # Find unlocked subagent
-        subagent_root = get_subagent_root()
-        subagent_dir = find_unlocked_subagent(subagent_root)
+        subagent_root_path = subagent_root if subagent_root is not None else get_subagent_root()
+        subagent_dir = find_unlocked_subagent(subagent_root_path)
         if subagent_dir is None:
             print(
                 "error: No unlocked subagents available. Provision additional subagents with:\n"
