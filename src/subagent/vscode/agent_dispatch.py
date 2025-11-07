@@ -365,6 +365,7 @@ def _launch_vscode_with_chat(
             print("warning: Workspace may not be fully ready", file=sys.stderr)
         
         # Open the chat in VS Code
+        time.sleep(0.5)  # Brief wait for VS Code to be focused
         subprocess.Popen(chat_cmd, shell=True)
         return True
             
