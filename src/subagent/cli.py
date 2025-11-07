@@ -31,6 +31,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         required=True,
     )
     
+    # Add 'code-insiders' subcommand for VS Code Insiders workspace agents
+    code_insiders_parser = subparsers.add_parser(
+        "code-insiders",
+        help="Manage VS Code Insiders workspace agents",
+    )
+    code_insiders_subparsers = code_insiders_parser.add_subparsers(
+        dest="action",
+        help="VS Code Insiders agent actions",
+        required=True,
+    )
+    
     # Add 'code provision' subcommand
     from .vscode.cli import add_provision_parser, add_chat_parser, add_warmup_parser, add_list_parser, add_unlock_parser
     add_provision_parser(code_subparsers)
@@ -39,10 +50,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     add_list_parser(code_subparsers)
     add_unlock_parser(code_subparsers)
     
+    # Add 'code-insiders provision' subcommand
+    add_provision_parser(code_insiders_subparsers)
+    add_chat_parser(code_insiders_subparsers)
+    add_warmup_parser(code_insiders_subparsers)
+    add_list_parser(code_insiders_subparsers)
+    add_unlock_parser(code_insiders_subparsers)
+    
     args = parser.parse_args(argv)
     
+    # Determine which VS Code executable to use
+    vscode_cmd = "code-insiders" if args.command == "code-insiders" else "code"
+    args.vscode_cmd = vscode_cmd
+    
     # Route to the appropriate handler
-    if args.command == "code":
+    if args.command in ["code", "code-insiders"]:
         if args.action == "provision":
             from .vscode.cli import handle_provision
             return handle_provision(args)

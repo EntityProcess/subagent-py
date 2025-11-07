@@ -262,10 +262,12 @@ def handle_provision(args: argparse.Namespace) -> int:
         return 0
 
     if args.warmup:
+        vscode_cmd = getattr(args, "vscode_cmd", "code")
         warmup_exit = warmup_subagents(
             subagent_root=args.target_root,
             subagents=args.subagents,
             dry_run=False,
+            vscode_cmd=vscode_cmd,
         )
         if warmup_exit != 0:
             return warmup_exit
@@ -275,22 +277,26 @@ def handle_provision(args: argparse.Namespace) -> int:
 
 def handle_chat(args: argparse.Namespace) -> int:
     """Handle the 'chat' subcommand."""
+    vscode_cmd = getattr(args, "vscode_cmd", "code")
     return dispatch_agent(
         args.query,
         args.prompt_file,
         extra_attachments=args.attachment,
         dry_run=args.dry_run,
         wait=args.wait,
+        vscode_cmd=vscode_cmd,
     )
 
 
 def handle_warmup(args: argparse.Namespace) -> int:
     """Handle the 'warmup' subcommand."""
     subagent_root = args.target_root if args.target_root else get_subagent_root()
+    vscode_cmd = getattr(args, "vscode_cmd", "code")
     return warmup_subagents(
         subagent_root=subagent_root,
         subagents=args.subagents,
         dry_run=args.dry_run,
+        vscode_cmd=vscode_cmd,
     )
 
 

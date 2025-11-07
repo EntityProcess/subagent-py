@@ -72,18 +72,19 @@ def find_unlocked_subagent(subagent_root: Path) -> Optional[Path]:
     return None
 
 
-def check_workspace_opened(workspace_name: str) -> bool:
+def check_workspace_opened(workspace_name: str, vscode_cmd: str = "code") -> bool:
     """Check if a workspace is currently opened in VS Code.
     
     Args:
         workspace_name: Name to search for in workspace list (e.g., 'subagent-1')
+        vscode_cmd: VS Code executable command (default: "code", could be "code-insiders")
     
     Returns:
         True if the workspace is currently open, False otherwise
     """
     try:
         result = subprocess.run(
-            'code --status',
+            f'{vscode_cmd} --status',
             shell=True,
             capture_output=True,
             text=True,
@@ -97,7 +98,7 @@ def check_workspace_opened(workspace_name: str) -> bool:
         return False
 
 
-def ensure_workspace_focused(workspace_path: Path, workspace_name: str, subagent_dir: Path, poll_interval: float = 1.0, timeout: float = 60.0) -> bool:
+def ensure_workspace_focused(workspace_path: Path, workspace_name: str, subagent_dir: Path, poll_interval: float = 1.0, timeout: float = 60.0, vscode_cmd: str = "code") -> bool:
     """Ensure VS Code workspace is open and focused.
     
     Opens the workspace only if it's not already open, then waits for .alive file to signal readiness.
@@ -108,15 +109,16 @@ def ensure_workspace_focused(workspace_path: Path, workspace_name: str, subagent
         subagent_dir: Path to the subagent directory
         poll_interval: Time between checks for .alive file (default: 1.0 seconds)
         timeout: Maximum time to wait for .alive file (default: 60.0 seconds)
+        vscode_cmd: VS Code executable command (default: "code", could be "code-insiders")
     
     Returns:
         True if workspace is ready, False if timeout occurred
     """
-    workspace_already_open = check_workspace_opened(workspace_name)
+    workspace_already_open = check_workspace_opened(workspace_name, vscode_cmd)
     
     if workspace_already_open:
         # Workspace is already open, just focus it and return
-        subprocess.Popen(f'code "{workspace_path}"', shell=True)
+        subprocess.Popen(f'{vscode_cmd} "{workspace_path}"', shell=True)
         return True
     
     # Workspace not open, need to open and wait for readiness
@@ -131,12 +133,12 @@ def ensure_workspace_focused(workspace_path: Path, workspace_name: str, subagent
         wakeup_dst = subagent_dir / "wakeup.chatmode.md"
         shutil.copy2(wakeup_src, wakeup_dst)
 
-    subprocess.Popen(f'code "{workspace_path}"', shell=True)
+    subprocess.Popen(f'{vscode_cmd} "{workspace_path}"', shell=True)
     time.sleep(0.1)  # Brief wait for VS Code to start
     
     # Use a unique chat_id for this readiness check
     wakeup_chat_id = "wakeup"
-    chat_cmd = f'code -r chat -m {wakeup_chat_id} "create a file named .alive"'
+    chat_cmd = f'{vscode_cmd} -r chat -m {wakeup_chat_id} "create a file named .alive"'
     subprocess.Popen(chat_cmd, shell=True)
     
     # Wait for .alive file to appear
@@ -330,6 +332,7 @@ def _launch_vscode_with_chat(
     attachment_paths: list[str],
     sudolang_prompt: str,
     timestamp: str,
+    vscode_cmd: str = "code",
 ) -> bool:
     """Launch VS Code with the workspace and chat.
     
@@ -344,7 +347,7 @@ def _launch_vscode_with_chat(
         req_file.write_text(sudolang_prompt, encoding='utf-8')
         
         # Build chat command with the unique chat mode
-        chat_cmd = f'code -r chat -m {chat_id}'
+        chat_cmd = f'{vscode_cmd} -r chat -m {chat_id}'
         
         # Add attachments
         for attachment in attachment_paths:
@@ -357,11 +360,12 @@ def _launch_vscode_with_chat(
         chat_cmd += f' "Follow instructions in {req_file.name}"'
 
         # Ensure workspace is open and focused (with .alive file check)
-        workspace_ready = ensure_workspace_focused(workspace_path, subagent_dir.name, subagent_dir)
+        workspace_ready = ensure_workspace_focused(workspace_path, subagent_dir.name, subagent_dir, vscode_cmd=vscode_cmd)
         if not workspace_ready:
             print("warning: Workspace may not be fully ready", file=sys.stderr)
         
         # Open the chat in VS Code
+        time.sleep(0.5)  # Brief wait for VS Code to be focused
         subprocess.Popen(chat_cmd, shell=True)
         return True
             
@@ -377,6 +381,7 @@ def dispatch_agent(
     extra_attachments: Optional[Sequence[Path]] = None,
     dry_run: bool = False,
     wait: bool = False,
+    vscode_cmd: str = "code",
 ) -> int:
     """Dispatch an agent to an isolated subagent.
     
@@ -388,6 +393,7 @@ def dispatch_agent(
         dry_run: When True, report planned actions without launching VS Code.
         wait: When True, wait for response and print to stdout (sync mode).
               When False (default), return immediately after dispatch (async mode).
+        vscode_cmd: VS Code executable command (default: "code", could be "code-insiders")
     
     Returns:
         Exit code (0 for success, non-zero for failure)
@@ -453,7 +459,7 @@ def dispatch_agent(
             return 0
 
         launch_success = _launch_vscode_with_chat(
-            subagent_dir, chat_id, attachment_paths, sudolang_prompt, timestamp
+            subagent_dir, chat_id, attachment_paths, sudolang_prompt, timestamp, vscode_cmd
         )
         
         if not launch_success:
@@ -583,6 +589,7 @@ def warmup_subagents(
     subagent_root: Optional[Path] = None,
     subagents: int = 1,
     dry_run: bool = False,
+    vscode_cmd: str = "code",
 ) -> int:
     """Open all provisioned VSCode workspaces to warm them up.
     
@@ -590,6 +597,7 @@ def warmup_subagents(
         subagent_root: Root directory containing subagents. Defaults to standard location.
         subagents: Number of subagent workspaces to open. Defaults to 1.
         dry_run: When True, report what would be done without opening workspaces.
+        vscode_cmd: VS Code executable command (default: "code", could be "code-insiders")
     
     Returns:
         Exit code (0 for success, non-zero for failure)
@@ -626,7 +634,7 @@ def warmup_subagents(
     for i, workspace in enumerate(workspaces_to_open, 1):
         try:
             print(f"  [{i}/{len(workspaces_to_open)}] {workspace.parent.name}", file=sys.stderr)
-            subprocess.Popen(f'code "{workspace}"', shell=True)
+            subprocess.Popen(f'{vscode_cmd} "{workspace}"', shell=True)
         except Exception as e:
             print(f"warning: Failed to open {workspace}: {e}", file=sys.stderr)
     
