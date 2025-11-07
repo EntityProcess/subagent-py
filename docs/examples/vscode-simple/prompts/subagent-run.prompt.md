@@ -18,7 +18,7 @@ subsequentWaitInterval = 15  // seconds (subsequent waits)
 * **Read ONLY the primary instruction file** to extract import paths - the subagent will read all files internally
 * **NEVER read imported files** (context.md, skill.md, etc.) - only collect their paths
 * Prefer #runSubagent tool when available
-* When #runSubagent NOT available, use lmspace CLI executor
+* When #runSubagent NOT available, use subagent CLI executor
 * Analyze query dependencies, parallelize independent queries
 * Wait for all queries in a group before reading results
 * Auto-provision subagents when unavailable
@@ -34,13 +34,13 @@ Use when #runSubagent tool is available.
 
 Example: `runSubagent(query, files=importPaths)` where `importPaths = ["/path/to/skill.md", "/path/to/context.md"]`
 
-### Strategy 2: Lmspace CLI Executor (Fallback)
+### Strategy 2: Subagent CLI Executor (Fallback)
 
 Use when #runSubagent NOT available.
 
 **Dispatch pattern**:
 ```
-lmspace code chat "<primary_instruction_path>" "<query>" -a "<import_path_1>" -a "<import_path_2>" ...
+subagent code chat "<primary_instruction_path>" "<query>" -a "<import_path_1>" -a "<import_path_2>" ...
 ```
 
 **Wait pattern**: Synchronous barrier with configurable intervals
@@ -70,7 +70,7 @@ primaryInstructionPath = findRelevantPrompt(userContext, "**/*.prompt.md")
 importPaths = resolveAllImports(primaryInstructionPath)
 
 // Determine strategy & build query groups
-strategy = if (#runSubagent available) "runSubagent" else "lmspaceCLI"
+strategy = if (#runSubagent available) "runSubagent" else "subagentCLI"
 queryGroups = parseQueries(userInput) |> analyzeQueryDependencies
 
 // Execute groups with parallelization
@@ -83,9 +83,9 @@ for each group in queryGroups {
       case "runSubagent" => 
         runSubagent(query, files=importPaths)
       
-      case "lmspaceCLI" => {
-        // Build lmspace command with ALL import paths as -a arguments
-        command = buildLmspaceCommand(primaryInstructionPath, query, importPaths)
+      case "subagentCLI" => {
+        // Build subagent command with ALL import paths as -a arguments
+        command = buildSubagentCommand(primaryInstructionPath, query, importPaths)
         dispatchQuery(command)
           |> onError("No unlocked subagents") => {
             provisionSubagent()
@@ -97,7 +97,7 @@ for each group in queryGroups {
   }
   
   // Wait barrier (CLI only)
-  if (strategy == "lmspaceCLI") {
+  if (strategy == "subagentCLI") {
     waitInterval = isFirstWait ? initialWaitInterval : subsequentWaitInterval
     wait(waitInterval)
     isFirstWait = false
@@ -110,9 +110,9 @@ for each group in queryGroups {
   }
 }
 
-// Helper function to build lmspace command with all imports
-buildLmspaceCommand(instructionPath, query, importPaths) {
-  baseCommand = "lmspace code chat \"$instructionPath\" \"$query\""
+// Helper function to build subagent command with all imports
+buildSubagentCommand(instructionPath, query, importPaths) {
+  baseCommand = "subagent code chat \"$instructionPath\" \"$query\""
   attachmentArgs = for each path in importPaths {
     "-a \"$path\""
   } |> join(" ")

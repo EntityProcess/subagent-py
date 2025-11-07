@@ -1,4 +1,4 @@
-"""Main CLI entry point for lmspace."""
+"""Main CLI entry point for subagent."""
 
 from __future__ import annotations
 
@@ -8,9 +8,9 @@ from typing import Sequence
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Main entry point for the lmspace CLI."""
+    """Main entry point for the subagent CLI."""
     parser = argparse.ArgumentParser(
-        prog="lmspace",
+        prog="subagent",
         description="Manage workspace agents across different backends",
     )
     

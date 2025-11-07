@@ -33,8 +33,8 @@ testcases:
         
         The total execution time would be approximately equal to the slowest query, not the sum of both, demonstrating true parallel execution.
 
-- id: fallback-to-lmspace-command
-  outcome: Falls back to lmspace command when runSubagent tool is not available
+- id: fallback-to-subagent-command
+  outcome: Falls back to subagent command when runSubagent tool is not available
   messages:
     - role: user
       content:
@@ -49,23 +49,23 @@ testcases:
             Explain how you would process these queries according to the SubagentRunner workflow when the runSubagent tool is not available in the environment.
     - role: assistant
       content: |-
-        I would process these queries using the lmspace CLI fallback since the runSubagent tool is not available:
+        I would process these queries using the subagent CLI fallback since the runSubagent tool is not available:
         
         1. Find relevant prompt: primaryInstructionPath = findRelevantPrompt(userContext, "**/*.prompt.md")
         2. Extract import paths: importPaths = extractImportPaths(primaryInstructionPath)
-        3. Determine strategy: #runSubagent NOT available → strategy = "lmspaceCLI"
+        3. Determine strategy: #runSubagent NOT available → strategy = "subagentCLI"
         4. Parse queries: parseQueries(userInput) → ["what is DSPy.", "how can we use DSPy to optimize prompts used for agentic coding."]
         5. Analyze dependencies: analyzeQueryDependencies() → Query 2 depends on Query 1, create two sequential groups
         6. Execute Group 1:
            - dispatchQuery(primaryInstructionPath, "what is DSPy.", importPaths)
            - wait(initialWaitInterval = 30 seconds)
-           - readResult(dispatch, "lmspaceCLI") and emit result
+           - readResult(dispatch, "subagentCLI") and emit result
         7. Execute Group 2:
            - dispatchQuery(primaryInstructionPath, "how can we use DSPy to optimize prompts used for agentic coding.", importPaths)
            - wait(subsequentWaitInterval = 15 seconds)
-           - readResult(dispatch, "lmspaceCLI") and emit result
+           - readResult(dispatch, "subagentCLI") and emit result
         
-        The system uses lmspace CLI with synchronous wait barriers when the runSubagent tool is not available.
+        The system uses subagent CLI with synchronous wait barriers when the runSubagent tool is not available.
 
 - id: prompt-not-available-tool-available
   outcome: Uses runSubagent tool even when custom DSPy prompt is not available in workspace

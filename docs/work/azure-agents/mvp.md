@@ -1,11 +1,11 @@
 # MVP Implementation Plan for YAML-Configured Custom GPTs
 
 ## Overview
-Build a Python runner using Microsoft Agent Framework to create custom GPT-like agents from YAML configs in the "lmspace" GitHub repo. Each YAML defines an agent's name, instructions, and URLs to files for its Azure OpenAI-backed knowledge base (KB). The runner parses YAMLs, fetches file content, uploads to Azure OpenAI for retrieval, and creates agents.
+Build a Python runner using Microsoft Agent Framework to create custom GPT-like agents from YAML configs in the "subagent" GitHub repo. Each YAML defines an agent's name, instructions, and URLs to files for its Azure OpenAI-backed knowledge base (KB). The runner parses YAMLs, fetches file content, uploads to Azure OpenAI for retrieval, and creates agents.
 
 **Assumptions**:
 - Python-based runner, Azure OpenAI with Assistants API (v2, file_search).
-- Public lmspace repo or GitHub token for private access.
+- Public subagent repo or GitHub token for private access.
 - Files are text-based or extractable (e.g., PDFs via PyPDF2).
 - KB persistence via Azure OpenAI file uploads.
 
@@ -23,7 +23,7 @@ urls:
 ### 1. Setup (1 day)
 - **Install**: `pip install agent-framework --pre requests pygithub openai azure-identity pypdf2`.
 - **Azure**: Set up Azure OpenAI, deploy gpt-4o-mini, use `az login`, set env vars (`AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT_NAME`, `AZURE_OPENAI_API_VERSION`).
-- **GitHub**: Use PyGitHub with `GITHUB_TOKEN` for lmspace access.
+- **GitHub**: Use PyGitHub with `GITHUB_TOKEN` for subagent access.
 
 ### 2. Runner Script (2 days)
 ```python
@@ -33,7 +33,7 @@ from azure.identity import AzureCliCredential
 from agent_framework.azure import AzureOpenAIResponsesClient
 from openai import AzureOpenAI
 
-def get_yaml_files(repo_name='lmspace', token=None):
+def get_yaml_files(repo_name='subagent', token=None):
     g = Github(token)
     repo = g.get_repo(f"{owner}/{repo_name}")  # Replace owner.
     return [yaml.safe_load(requests.get(f.download_url).text) for f in repo.get_contents("") if f.name.endswith('.yaml')]

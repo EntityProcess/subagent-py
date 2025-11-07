@@ -1,6 +1,6 @@
-# LMSpace
+# Subagent
 
-LMSpace is a CLI tool for managing workspace agents across different backends. It currently supports VS Code workspace agents with plans to add support for OpenAI Agents, Azure AI Agents, GitHub Copilot CLI and Codex CLI.
+Subagent is a CLI tool for managing workspace agents across different backends. It currently supports VS Code workspace agents with plans to add support for OpenAI Agents, Azure AI Agents, GitHub Copilot CLI and Codex CLI.
 
 ## Features
 
@@ -25,34 +25,31 @@ The project uses `uv` for dependency and environment management.
 ### Installation
 
 ```powershell
-# Install lmspace as a uv-managed tool (recommended for end users)
-uv tool install lmspace
+# Install subagent as a uv-managed tool (recommended - makes command globally available)
+uv tool install subagent
 
-# Install via uv pip (useful when managing a virtualenv manually)
-uv pip install lmspace
-
-# Or for development
-uv pip install -e .[dev]
+# Or for development (editable install as global tool)
+uv tool install --editable .
 ```
 
 ### Using VS Code Workspace Agents
 
 1. **Provision and optionally warm up subagent workspaces**:
    ```powershell
-   lmspace code provision --subagents 5 [--warmup]
+   subagent code provision --subagents 5 [--warmup]
    ```
-   This creates 5 isolated workspace directories in `~/.lmspace/vscode-agents/`. Add `--warmup` to open the newly provisioned workspaces immediately.
+   This creates 5 isolated workspace directories in `~/.subagent/vscode-agents/`. Add `--warmup` to open the newly provisioned workspaces immediately.
 
 2. **Start a chat with an agent (async mode - default)**:
    ```powershell
-   lmspace code chat <prompt_file> "Your query here"
+   subagent code chat <prompt_file> "Your query here"
    ```
    This claims an unlocked subagent, copies your prompt file and any attachments, opens VS Code with a wakeup chatmode, and returns immediately.
    The agent writes its response to a file that you can monitor or read later.
 
 3. **Start a chat with an agent (sync mode - wait for response)**:
    ```powershell
-   lmspace code chat <prompt_file> "Your query here" --wait
+   subagent code chat <prompt_file> "Your query here" --wait
    ```
    This blocks until the agent completes and prints the response to stdout.
 
@@ -60,18 +57,18 @@ uv pip install -e .[dev]
 
 **Provision subagents**:
 ```powershell
-lmspace code provision --subagents <count> [--force] [--template <path>] [--target-root <path>] [--warmup]
+subagent code provision --subagents <count> [--force] [--template <path>] [--target-root <path>] [--warmup]
 ```
 - `--subagents <count>`: Number of workspaces to create
 - `--force`: Unlock and overwrite all subagent directories regardless of lock status
 - `--template <path>`: Custom template directory
-- `--target-root <path>`: Custom destination (default: `~/.lmspace/vscode-agents`)
+- `--target-root <path>`: Custom destination (default: `~/.subagent/vscode-agents`)
 - `--dry-run`: Preview without making changes
 - `--warmup`: Launch VS Code for the provisioned workspaces once provisioning finishes
 
 **Warm up workspaces**:
 ```powershell
-lmspace code warmup [--subagents <count>] [--target-root <path>] [--dry-run]
+subagent code warmup [--subagents <count>] [--target-root <path>] [--dry-run]
 ```
 - `--subagents <count>`: Number of workspaces to open (default: 1)
 - `--target-root <path>`: Custom subagent root directory
@@ -79,7 +76,7 @@ lmspace code warmup [--subagents <count>] [--target-root <path>] [--dry-run]
 
 **Start a chat with an agent**:
 ```powershell
-lmspace code chat <prompt_file> <query> [--attachment <path>] [--wait] [--dry-run]
+subagent code chat <prompt_file> <query> [--attachment <path>] [--wait] [--dry-run]
 ```
 - `<prompt_file>`: Path to a prompt file to copy and attach (e.g., `vscode-expert.prompt.md`)
 - `<query>`: User query to pass to the agent
@@ -91,14 +88,14 @@ lmspace code chat <prompt_file> <query> [--attachment <path>] [--wait] [--dry-ru
 
 **List provisioned subagents**:
 ```powershell
-lmspace code list [--target-root <path>] [--json]
+subagent code list [--target-root <path>] [--json]
 ```
 - `--target-root <path>`: Custom subagent root directory
 - `--json`: Output results as JSON
 
 **Unlock subagents**:
 ```powershell
-lmspace code unlock [--subagent <name>] [--all] [--target-root <path>] [--dry-run]
+subagent code unlock [--subagent <name>] [--all] [--target-root <path>] [--dry-run]
 ```
 - `--subagent <name>`: Specific subagent to unlock (e.g., `subagent-1`)
 - `--all`: Unlock all subagents
@@ -108,8 +105,8 @@ lmspace code unlock [--subagent <name>] [--all] [--target-root <path>] [--dry-ru
 ## Development
 
 ```powershell
-# Install deps (from repo root)
-uv pip install -e . --extra dev
+# Install as editable global tool (from repo root)
+uv tool install --editable .
 
 # Run tests
 uv run --extra dev pytest

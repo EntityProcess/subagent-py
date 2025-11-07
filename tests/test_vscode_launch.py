@@ -8,13 +8,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from lmspace.vscode.agent_dispatch import (
+from subagent.vscode.agent_dispatch import (
     find_unlocked_subagent,
     copy_agent_config,
     create_subagent_lock,
     DEFAULT_LOCK_NAME,
 )
-from lmspace.vscode.cli import handle_chat
+from subagent.vscode.cli import handle_chat
 
 
 @pytest.fixture

@@ -1,14 +1,14 @@
-# Technical Design Document: LMSpace Framework
+# Technical Design Document: Subagent Framework
 
 ## 1. Document Metadata
-- **Title**: LMSpace: Azure-Aligned Agent Framework for Enterprise Knowledge Persistence and LLM Synchronization
+- **Title**: Subagent: Azure-Aligned Agent Framework for Enterprise Knowledge Persistence and LLM Synchronization
 - **Version**: 1.1
 - **Date**: October 17, 2025
-- **Purpose**: This document outlines the technical design for **LMSpace**, a Python-based solution (PyPI package: `lmspace`) that persists enterprise knowledge in Azure, synchronizes with Azure Large Language Models (LLMs), and supports dynamic subagents for codebase research. LMSpace is implemented on top of the **Microsoft Agent Framework**, leveraging its next-generation agent and workflow capabilities.
+- **Purpose**: This document outlines the technical design for **Subagent**, a Python-based solution (PyPI package: `subagent`) that persists enterprise knowledge in Azure, synchronizes with Azure Large Language Models (LLMs), and supports dynamic subagents for codebase research. Subagent is implemented on top of the **Microsoft Agent Framework**, leveraging its next-generation agent and workflow capabilities.
 
 ## 2. Overview
 ### 2.1 Project Description
-**LMSpace** is an open-source Python system for building intelligent agents that manage enterprise knowledge (documents, codebases, business rules) and synchronize with Azure LLMs (Azure OpenAI, Azure ML models). Key features include:
+**Subagent** is an open-source Python system for building intelligent agents that manage enterprise knowledge (documents, codebases, business rules) and synchronize with Azure LLMs (Azure OpenAI, Azure ML models). Key features include:
 - **Contextual Knowledge Management**: Persists knowledge (embeddings, metadata, documents) in Azure Cosmos DB, Blob Storage, or Table Storage, creating a "space" for enterprise data similar to Copilot Spaces.
 - **Dynamic Subagents**: Uses Microsoft Agent Framework workflows to spin up specialized agents for codebase research (pattern mining, module summarization) in isolated context windows.
 - **Azure LLM Synchronization**: Enables real-time or batch sync for model inference and fine-tuning to keep agents aligned with the latest model capabilities.
@@ -21,7 +21,7 @@ The Microsoft Agent Framework—successor to Semantic Kernel and AutoGen—provi
 - Enable dynamic subagents for codebase research with isolated context windows via workflow routing, hand-offs, and checkpointing.
 - Ensure secure, scalable integration with Azure services and enterprise-grade observability.
 - Support massive contexts (10M+ tokens) through workflow-based fan-out, recursion, and streaming.
-- Distribute as a PyPI package (`lmspace`) with a clean developer experience built around `uv`.
+- Distribute as a PyPI package (`subagent`) with a clean developer experience built around `uv`.
 
 ### 2.3 Assumptions and Dependencies
 - Python 3.12+ (managed via `.python-version`).
@@ -33,7 +33,7 @@ The Microsoft Agent Framework—successor to Semantic Kernel and AutoGen—provi
 
 ## 3. Architecture
 ### 3.1 High-Level Architecture
-**LMSpace** follows a layered, modular design inspired by contextual workspaces like Copilot Spaces, with Microsoft Agent Framework primitives at its core:
+**Subagent** follows a layered, modular design inspired by contextual workspaces like Copilot Spaces, with Microsoft Agent Framework primitives at its core:
 - **Agent Layer**: Core agents (`KnowledgeAgent`, `ResearchAgent`, optional domain-specific agents) implemented with Agent Framework agent threads and context providers.
 - **Workflow Layer**: Graph workflows orchestrate subagents, deterministic executors, and tool calls (MCP servers, Python functions) for complex tasks such as large-scale code analysis.
 - **Persistence Layer**: Azure storage (Cosmos DB for embeddings/metadata, Blob Storage for raw content) with pointers referenced from agent context providers.
@@ -69,7 +69,7 @@ The Microsoft Agent Framework—successor to Semantic Kernel and AutoGen—provi
   - Batch sync: Exports knowledge as datasets to Azure ML for fine-tuning and evaluation.
   - Real-time sync: Uses Azure Event Grid/Service Bus to trigger incremental updates.
 - **ConfigManager**:
-  - Loads Azure credentials and configs from `lmspace.yaml` or environment variables and hydrates Agent Framework dependency injection containers.
+  - Loads Azure credentials and configs from `subagent.yaml` or environment variables and hydrates Agent Framework dependency injection containers.
 
 #### 3.2.2 Extensibility
 - **Custom Agents**: Inherit from Agent Framework base classes for domain-specific logic (e.g., `PolicyAgent`) while reusing shared middleware and context providers.
@@ -150,12 +150,12 @@ The Microsoft Agent Framework—successor to Semantic Kernel and AutoGen—provi
 
 ## 7. Deployment and Operations
 ### 7.1 Deployment
-- **PyPI Packaging**: Use `uv` and `pyproject.toml` for `lmspace` package.
+- **PyPI Packaging**: Use `uv` and `pyproject.toml` for `subagent` package.
 - **CI/CD**: GitHub Actions or Azure DevOps to lint, test, validate workflows, and publish to PyPI.
 - **Repo Structure**:
   ```
-  lmspace/
-  ├── lmspace/
+  subagent/
+  ├── subagent/
   │   ├── agent_app.py
   │   ├── workflows.py
   │   ├── persistence.py
@@ -164,12 +164,12 @@ The Microsoft Agent Framework—successor to Semantic Kernel and AutoGen—provi
   ├── tests/
   ├── .python-version
   ├── pyproject.toml
-  └── lmspace.yaml (example config)
+  └── subagent.yaml (example config)
   ```
-- **Installation**: `pip install lmspace` or `uv pip install lmspace`
+- **Installation**: `pip install subagent` or `uv pip install subagent`
 
 ### 7.2 Operations
-- **Configuration**: `lmspace.yaml` with Azure resource IDs (`cosmos_endpoint`, `blob_account`, `openai_key`, `ml_workspace`).
+- **Configuration**: `subagent.yaml` with Azure resource IDs (`cosmos_endpoint`, `blob_account`, `openai_key`, `ml_workspace`).
 - **Development Setup**:
   1. **Create a virtual environment:**
      ```bash
@@ -196,10 +196,10 @@ The Microsoft Agent Framework—successor to Semantic Kernel and AutoGen—provi
   ```python
   from agent_framework.agents import Agent
   from agent_framework.clients.openai import AzureOpenAIResponsesClient
-  from lmspace.agent_app import create_knowledge_agent
-  from lmspace.config import load_config
+  from subagent.agent_app import create_knowledge_agent
+  from subagent.config import load_config
 
-  config = load_config('lmspace.yaml')
+  config = load_config('subagent.yaml')
   responses_client = AzureOpenAIResponsesClient.from_env()
   agent: Agent = create_knowledge_agent(config, responses_client)
   # Ingest knowledge
