@@ -25,14 +25,11 @@ The project uses `uv` for dependency and environment management.
 ### Installation
 
 ```powershell
-# Install subagent as a uv-managed tool (recommended for end users)
+# Install subagent as a uv-managed tool (recommended - makes command globally available)
 uv tool install subagent
 
-# Install via uv pip (useful when managing a virtualenv manually)
-uv pip install subagent
-
-# Or for development
-uv pip install -e .[dev]
+# Or for development (editable install as global tool)
+uv tool install --editable .
 ```
 
 ### Using VS Code Workspace Agents
@@ -108,8 +105,8 @@ subagent code unlock [--subagent <name>] [--all] [--target-root <path>] [--dry-r
 ## Development
 
 ```powershell
-# Install deps (from repo root)
-uv pip install -e . --extra dev
+# Install as editable global tool (from repo root)
+uv tool install --editable .
 
 # Run tests
 uv run --extra dev pytest
