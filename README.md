@@ -1,5 +1,7 @@
 # Subagent
 
+> **Deprecation Notice:** This repository is no longer maintained. It has been integrated as a VS Code provider in [agentv](https://github.com/EntityProcess/agentv).
+
 Subagent is a CLI tool for managing workspace agents across different backends. It currently supports VS Code workspace agents with plans to add support for OpenAI Agents, Azure AI Agents, GitHub Copilot CLI and Codex CLI.
 
 ## Features

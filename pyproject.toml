@@ -1,6 +1,6 @@
 [project]
 name = "subagent"
-version = "0.3.1"
+version = "0.3.2"
 description = "Runner that provisions subagents from configs"
 readme = "README.md"
 license = {text = "MIT"}
